@@ -50,6 +50,29 @@ docker run --rm -p 8080:8080 \
 ```
 On Linux/macOS, replace the volume path with `$(pwd)/data:/data`.
 
+## Docker Compose
+You can also use docker-compose for quick local runs.
+
+Compose file maps port 8080 and persists the SQLite DB under `./data`.
+
+Up/Down:
+```
+docker compose up -d
+# ... app runs on http://localhost:8080
+curl http://localhost:8080/health
+
+docker compose down
+```
+
+Override env in an `.env` file next to `docker-compose.yml` (optional):
+```
+RUST_LOG=info
+DATABASE_URL=sqlite:///data/flags.db
+BIND=0.0.0.0:8080
+```
+Then rerun `docker compose up -d`.
+
+
 ## API
 - `GET /health` – health check
 - `GET /flags` – list flags
@@ -115,25 +138,3 @@ Response:
 - Variant weights are integers and must sum to a positive number
 - `rollout` is 0–100 and gates evaluation by `user_id`
 - If no variants are set, the flag behaves as a boolean gate
-
-## Docker Compose
-You can also use docker-compose for quick local runs.
-
-Compose file maps port 8080 and persists the SQLite DB under `./data`.
-
-Up/Down:
-```
-docker compose up -d
-# ... app runs on http://localhost:8080
-curl http://localhost:8080/health
-
-docker compose down
-```
-
-Override env in an `.env` file next to `docker-compose.yml` (optional):
-```
-RUST_LOG=info
-DATABASE_URL=sqlite:///data/flags.db
-BIND=0.0.0.0:8080
-```
-Then rerun `docker compose up -d`.
